@@ -280,10 +280,10 @@ This is a demo application for educational purposes.
 
 ## Support
 
-For issues or questions, please review the code documentation or contact the development team.
+For issues or questions, please review the code documentation.
 
 ---
 
 **Developed with ASP.NET Core MVC**
 **Version: 1.0**
-**Last Updated: 2024**
+**Last Updated: 2026**
