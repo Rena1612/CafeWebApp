@@ -1,0 +1,139 @@
+@model CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container my-5">
+    <h1 class="mb-4">
+        <i class="bi bi-credit-card"></i> Checkout
+    </h1>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="PlaceOrder" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerName" class="form-label"></label>
+                                <input asp-for="CustomerName" class="form-control" required />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" type="tel" required />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsTakeaway" class="form-check-input" type="checkbox" id="isTakeaway" />
+                                    <label class="form-check-label" for="isTakeaway">
+                                        This is a takeaway order
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="tableNumberSection">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TableNumber" class="form-label"></label>
+                                <input asp-for="TableNumber" class="form-control" />
+                                <span asp-validation-for="TableNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PaymentMethod" class="form-label"></label>
+                                <select asp-for="PaymentMethod" class="form-select" required>
+                                    <option value="">-- Select Payment Method --</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="Mobile Payment">Mobile Payment</option>
+                                </select>
+                                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Notes" class="form-label"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="3" 
+                                          placeholder="Any special requests or dietary requirements?"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Place Order
+                            </button>
+                            <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Cart
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Items</span>
+                        <strong>@Model.TotalItems</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total Amount</strong>
+                        <strong class="text-success">$@Model.TotalAmount.ToString("F2")</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="bi bi-info-circle"></i> Payment Information</h6>
+                    <p class="small text-muted mb-0">
+                        Payment will be processed when you pick up your order or at your table.
+                        This is a secure checkout process.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Toggle table number field based on takeaway checkbox
+        $('#isTakeaway').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#tableNumberSection').hide();
+                $('#TableNumber').val('');
+            } else {
+                $('#tableNumberSection').show();
+            }
+        });
+
+        // Initialize on page load
+        $(document).ready(function() {
+            if ($('#isTakeaway').is(':checked')) {
+                $('#tableNumberSection').hide();
+            }
+        });
+    </script>
+}

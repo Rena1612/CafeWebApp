@@ -1,0 +1,151 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <a href="@Url.Action("Index", "Menu")" class="btn btn-outline-secondary mb-4">
+                <i class="bi bi-arrow-left"></i> Back to Menu
+            </a>
+
+            <div class="card shadow">
+                <div class="row g-0">
+                    <div class="col-md-5">
+                        <img src="@(Model.ImageUrl ?? "/images/placeholder.jpg")"
+                             class="img-fluid rounded-start"
+                             alt="@Model.Name"
+                             style="width: 100%; height: 400px; object-fit: cover;">
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h2 class="card-title">@Model.Name</h2>
+                                    <span class="badge bg-secondary">@Model.Category?.Name</span>
+                                    @if (Model.IsFeatured)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-2">
+                                            <i class="bi bi-star-fill"></i> Featured
+                                        </span>
+                                    }
+                                </div>
+                                <div class="text-end">
+                                    @if (Model.InStock)
+                                    {
+                                        <span class="badge bg-success mb-2">In Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger mb-2">Out of Stock</span>
+                                    }
+                                    <h3 class="text-primary mb-0">$@Model.Price.ToString("F2")</h3>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-4">
+                                <h5>Description</h5>
+                                <p class="card-text">
+                                    @if (!string.IsNullOrEmpty(Model.Description))
+                                    {
+                                        @Model.Description
+                                    }
+                                    else
+                                    {
+                                        <text>No description available.</text>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5>Product Information</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-tag"></i> <strong>Category:</strong> @Model.Category?.Name</li>
+                                    <li><i class="bi bi-currency-dollar"></i> <strong>Price:</strong> $@Model.Price.ToString("F2")</li>
+                                    <li>
+                                        <i class="bi bi-box"></i> <strong>Availability:</strong>
+                                        @if (Model.InStock)
+                                        {
+                                            <span class="text-success">Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger">Currently Unavailable</span>
+                                        }
+                                    </li>
+                                </ul>
+                            </div>
+
+                            @if (Model.InStock)
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                    <input type="hidden" name="productId" value="@Model.Id" />
+
+                                    <div class="row align-items-end">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="quantity" class="form-label">Quantity</label>
+                                            <input type="number"
+                                                   class="form-control"
+                                                   id="quantity"
+                                                   name="quantity"
+                                                   value="1"
+                                                   min="1"
+                                                   max="100">
+                                        </div>
+                                        <div class="col-md-8 mb-3">
+                                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                                <i class="bi bi-cart-plus"></i> Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    This item is currently out of stock. Please check back later.
+                                </div>
+                            }
+
+                            <div class="mt-4">
+                                <a href="@Url.Action("Index", "Menu", new { categoryId = Model.CategoryId })"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-grid"></i> View More from @Model.Category?.Name
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products (Optional) -->
+            <div class="mt-5">
+                <h4 class="mb-4">You May Also Like</h4>
+                <div class="row">
+                    <!-- You could add related products here if you implement that feature -->
+                    <div class="col-12 text-center text-muted">
+                        <p>Browse our full <a href="@Url.Action("Index", "Menu")">menu</a> for more delicious options!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Refresh cart count after adding item
+        $('form[action*="AddToCart"]').on('submit', function() {
+            setTimeout(function() {
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                }
+            }, 500);
+        });
+    </script>
+}

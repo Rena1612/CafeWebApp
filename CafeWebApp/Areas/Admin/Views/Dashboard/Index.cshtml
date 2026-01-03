@@ -1,0 +1,190 @@
+@model IEnumerable<Order>
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var totalOrders = ViewBag.TotalOrders as int? ?? 0;
+    var totalProducts = ViewBag.TotalProducts as int? ?? 0;
+    var totalCategories = ViewBag.TotalCategories as int? ?? 0;
+    var pendingOrders = ViewBag.PendingOrders as int? ?? 0;
+    var totalRevenue = ViewBag.TotalRevenue as decimal? ?? 0;
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Dashboard Overview</h2>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Orders</h6>
+                            <h3 class="mb-0">@totalOrders</h3>
+                        </div>
+                        <i class="bi bi-receipt" style="font-size: 40px; color: #6f4e37;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Pending Orders</h6>
+                            <h3 class="mb-0 text-warning">@pendingOrders</h3>
+                        </div>
+                        <i class="bi bi-clock-history" style="font-size: 40px; color: #ffc107;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Products</h6>
+                            <h3 class="mb-0">@totalProducts</h3>
+                        </div>
+                        <i class="bi bi-box" style="font-size: 40px; color: #6f4e37;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Revenue</h6>
+                            <h3 class="mb-0 text-success">$@totalRevenue.ToString("F2")</h3>
+                        </div>
+                        <i class="bi bi-currency-dollar" style="font-size: 40px; color: #28a745;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="@Url.Action("Create", "Products", new { area = "Admin" })" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add New Product
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="@Url.Action("Create", "Categories", new { area = "Admin" })" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add New Category
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="@Url.Action("Index", "Orders", new { area = "Admin", status = "Pending" })" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-eye"></i> View Pending Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="@Url.Action("Index", "Products", new { area = "Admin" })" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-list"></i> Manage Products
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Orders</h5>
+                    <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="btn btn-sm btn-light">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model)
+                                    {
+                                        <tr>
+                                            <td><strong>#@order.Id</strong></td>
+                                            <td>@order.CustomerName</td>
+                                            <td>@order.CreatedAt.ToString("MMM dd, hh:mm tt")</td>
+                                            <td>
+                                                @if (order.IsTakeaway)
+                                                {
+                                                    <span class="badge bg-info">Takeaway</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Table @order.TableNumber</span>
+                                                }
+                                            </td>
+                                            <td><strong>$@order.TotalAmount.ToString("F2")</strong></td>
+                                            <td>
+                                                @switch (order.Status)
+                                                {
+                                                    case "Pending":
+                                                        <span class="badge bg-warning">@order.Status</span>
+                                                        break;
+                                                    case "Preparing":
+                                                        <span class="badge bg-info">@order.Status</span>
+                                                        break;
+                                                    case "Completed":
+                                                        <span class="badge bg-success">@order.Status</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@order.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "Orders", new { area = "Admin", id = order.Id })" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mb-0">No orders yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

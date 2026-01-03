@@ -1,0 +1,110 @@
+﻿@model IEnumerable<Order>
+
+@{
+    ViewData["Title"] = "Manage Orders";
+    var selectedStatus = ViewBag.SelectedStatus as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Orders Management</h2>
+</div>
+
+<!-- Filter Buttons -->
+<div class="mb-4">
+    <div class="btn-group" role="group">
+        <a asp-action="Index" class="btn @(string.IsNullOrEmpty(selectedStatus) ? "btn-primary" : "btn-outline-primary")">
+            All Orders
+        </a>
+        <a asp-action="Index" asp-route-status="Pending" class="btn @(selectedStatus == "Pending" ? "btn-warning" : "btn-outline-warning")">
+            Pending
+        </a>
+        <a asp-action="Index" asp-route-status="Preparing" class="btn @(selectedStatus == "Preparing" ? "btn-info" : "btn-outline-info")">
+            Preparing
+        </a>
+        <a asp-action="Index" asp-route-status="Completed" class="btn @(selectedStatus == "Completed" ? "btn-success" : "btn-outline-success")">
+            Completed
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td><strong>#@order.Id</strong></td>
+                                <td>@order.CustomerName<br><small class="text-muted">@order.Phone</small></td>
+                                <td>@order.CreatedAt.ToString("MMM dd, yyyy")<br><small class="text-muted">@order.CreatedAt.ToString("hh:mm tt")</small></td>
+                                <td>
+                                    @if (order.IsTakeaway)
+                                    {
+                                        <span class="badge bg-info">Takeaway</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Table @order.TableNumber</span>
+                                    }
+                                </td>
+                                <td><strong>$@order.TotalAmount.ToString("F2")</strong></td>
+                                <td>
+                                    @switch (order.Status)
+                                    {
+                                        case "Pending":
+                                            <span class="badge bg-warning">@order.Status</span>
+                                            break;
+                                        case "Preparing":
+                                            <span class="badge bg-info">@order.Status</span>
+                                            break;
+                                        case "Ready":
+                                            <span class="badge bg-primary">@order.Status</span>
+                                            break;
+                                        case "Completed":
+                                            <span class="badge bg-success">@order.Status</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@order.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-muted py-4">
+                @if (string.IsNullOrEmpty(selectedStatus))
+                {
+                    <text>No orders found.</text>
+                }
+                else
+                {
+                    <text>No @selectedStatus.ToLower() orders found.</text>
+                }
+            </p>
+        }
+    </div>
+</div>

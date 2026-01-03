@@ -1,0 +1,18 @@
+﻿
+{
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 48px;
+}
+
+.hover-zoom {
+    transition: transform 0.3s ease;
+}
+
+    .hover-zoom:hover {
+        transform: scale(1.05);
+    }
+
